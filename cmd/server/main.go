@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net"
+	"os"
 
 	proto "order_open_delivery_go_service/api/order-proto"
 	"order_open_delivery_go_service/internal/order/handler"
@@ -10,13 +11,25 @@ import (
 	"order_open_delivery_go_service/internal/order/service"
 	"order_open_delivery_go_service/internal/queue"
 
+	"github.com/joho/godotenv"
 	"google.golang.org/grpc"
 )
 
 func main() {
+	
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Erro ao carregar o arquivo .env")
+	}
+
+	awsRegion := os.Getenv("AWS_REGION")
+	queueURL := os.Getenv("SQS_QUEUE_URL")
+
+	
+	sqsClient, err := queue.NewSQSClient(awsRegion, queueURL)
 
 	orderRepository := repository.NewInMemoryOrderRepository()
-	sqsClient, err := queue.NewSQSClient("us-east-1", "https://sqs.us-east-1.amazonaws.com/123456789012/myqueue")
+	
 	if err != nil {
 		log.Fatalf("Erro ao criar cliente SQS: %v", err)
 	}
