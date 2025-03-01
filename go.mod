@@ -3,6 +3,7 @@ module order_open_delivery_go_service
 go 1.24.0
 
 require (
+	github.com/aws/aws-sdk-go v1.55.6
 	github.com/go-playground/validator v9.31.0+incompatible
 	google.golang.org/grpc v1.70.0
 	google.golang.org/protobuf v1.35.2
@@ -11,6 +12,7 @@ require (
 require (
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
+	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
 	golang.org/x/net v0.32.0 // indirect
 	golang.org/x/sys v0.28.0 // indirect
