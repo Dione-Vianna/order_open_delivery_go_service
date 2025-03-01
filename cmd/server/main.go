@@ -15,14 +15,40 @@ import (
 	"google.golang.org/grpc"
 )
 
-func main() {
+func startServer(provider queue.QueueProvider, config map[string]string) error {
 
+	client, err := queue.NewQueueClient(provider, config)
+	if err != nil {
+		log.Fatalf("Erro ao criar cliente de fila: %v", err)
+	}
+
+	orderRepository := repository.NewInMemoryOrderRepository()
+	orderService := service.NewOrderService(orderRepository, client)
+
+	listener, err := net.Listen("tcp", ":7777")
+	if err != nil {
+		return err
+	}
+
+	orderHandler := handler.NewOrderHandler(orderService)
+	grpcServer := grpc.NewServer()
+	proto.RegisterOrderServiceServer(grpcServer, orderHandler)
+
+	if err := grpcServer.Serve(listener); err != nil {
+		return err
+	}
+
+	log.Printf("Servidor gRPC rodando na porta :7777")
+	return nil
+}
+
+func main() {
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("Erro ao carregar o arquivo .env")
 	}
 
-	provider := queue.RabbitMQProvider // RabbitMQProvider or SQSProvider
+	provider := queue.SQSProvider // RabbitMQProvider or SQSProvider
 
 	config := make(map[string]string)
 
@@ -36,28 +62,7 @@ func main() {
 		config["queueName"] = os.Getenv("RABBITMQ_QUEUE_NAME")
 	}
 
-	sqsClient, err := queue.NewQueueClient(provider, config)
-	if err != nil {
-		log.Fatalf("Erro ao criar cliente SQS: %v", err)
-	}
-
-	orderRepository := repository.NewInMemoryOrderRepository()
-
-	orderService := service.NewOrderService(orderRepository, sqsClient)
-
-	listener, err := net.Listen("tcp", ":7777")
-	if err != nil {
+	if err := startServer(provider, config); err != nil {
 		log.Fatalf("Erro ao iniciar o servidor: %v", err)
 	}
-
-	orderHandler := handler.NewOrderHandler(orderService)
-
-	grpcServer := grpc.NewServer()
-	proto.RegisterOrderServiceServer(grpcServer, orderHandler)
-
-	if err := grpcServer.Serve(listener); err != nil {
-		log.Fatalf("Erro ao iniciar o servidor: %v", err)
-	}
-
-	log.Printf("Servidor gRPC rodando na porta :7777")
 }
