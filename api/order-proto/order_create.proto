@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+package order;
+
+option go_package = "api/order-proto/";
+
+service OrderService {
+  rpc CreateOrder(OrderRequest) returns (OrderResponse);
+}
+
+
+message OrderRequest {
+  repeated Item items = 1;
+}
+
+message OrderResponse {
+  string status = 1;
+  string message = 2;
+}
+
+message Item {
+  string id = 1;
+  int32 index = 2;
+  string name = 3;
+  string external_code = 4;
+  string unit = 5;
+  string ean = 6;
+  int32 quantity = 7;
+  string special_instructions = 8;
+  Price unit_price = 9;
+  Price options_price = 10;
+  Price total_price = 11;
+  repeated Option options = 12;
+}
+
+message Option {
+  int32 index = 1;
+  string id = 2;
+  string name = 3;
+  string external_code = 4;
+  string unit = 5;
+  string ean = 6;
+  int32 quantity = 7;
+  Price unit_price = 8;
+  Price total_price = 9;
+  string special_instructions = 10;
+}
+
+message Price {
+  float value = 1;
+  string currency = 2;
+}
