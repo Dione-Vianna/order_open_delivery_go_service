@@ -1,0 +1,10 @@
+[build]
+cmd = "go build -o bin/server cmd/server/main.go"
+bin = "bin/server"
+
+[watcher]
+include = ["cmd", "internal", "pkg"]
+exclude = ["vendor", "bin", "docs"]
+
+[log]
+time = true

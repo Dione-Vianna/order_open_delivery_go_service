@@ -23,7 +23,7 @@ func NewOrderHandler(orderService *service.OrderService) *OrderHandler {
 }
 
 
-func (h *OrderHandler) CreateOrder(ctx context.Context, req *proto.OrderRequest) (*proto.OrderResponse, error) {
+func (handler *OrderHandler) CreateOrder(ctx context.Context, req *proto.OrderRequest) (*proto.OrderResponse, error) {
 
 	log.Println("Chamando CreateOrder no OrderHandler")
 	if err := validation.ValidateOrderRequest(req); err != nil {
@@ -32,12 +32,13 @@ func (h *OrderHandler) CreateOrder(ctx context.Context, req *proto.OrderRequest)
 	}
 
 	
-	orderResponse, err := h.orderService.CreateOrder(ctx, req)
+	orderResponse, err := handler.orderService.CreateOrder(ctx, req)
 	if err != nil {
 		log.Printf("Erro ao criar o pedido: %v", err)
 		return nil, err
 	}
 
+	log.Printf("Resposta do pedido: %+v", orderResponse)
 	
 	return orderResponse, nil
 }

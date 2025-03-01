@@ -1,4 +1,4 @@
-.PHONY: run build
+.PHONY: run build start watch
 
 run:
 	go run cmd/server/main.go
@@ -8,3 +8,6 @@ build:
 
 start: build
 	./bin/server
+
+watch:
+	air

@@ -44,6 +44,7 @@ func (s *OrderService) CreateOrder(ctx context.Context, req *proto.OrderRequest)
 	err = s.queueClient.SendMessage("Novo pedido criado")
 	if err != nil {
 		log.Printf("Erro ao enviar mensagem para fila: %v", err)
+		return nil, err
 	}
 
 
