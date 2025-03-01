@@ -55,8 +55,9 @@ func main() {
 	grpcServer := grpc.NewServer()
 	proto.RegisterOrderServiceServer(grpcServer, orderHandler)
 
-	log.Printf("Servidor gRPC rodando na porta :7777")
 	if err := grpcServer.Serve(listener); err != nil {
 		log.Fatalf("Erro ao iniciar o servidor: %v", err)
 	}
+
+	log.Printf("Servidor gRPC rodando na porta :7777")
 }
