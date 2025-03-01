@@ -2,8 +2,8 @@ package service
 
 import (
 	proto "order_open_delivery_go_service/api/order-proto"
-	"order_open_delivery_go_service/internal/order/queue"
 	"order_open_delivery_go_service/internal/order/repository"
+	"order_open_delivery_go_service/internal/queue"
 
 	"github.com/go-playground/validator"
 )
