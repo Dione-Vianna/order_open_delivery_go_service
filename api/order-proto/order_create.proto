@@ -10,7 +10,8 @@ service OrderService {
 
 
 message OrderRequest {
-  repeated Item items = 1;
+  string id = 1;
+  repeated Item items = 2;
 }
 
 message OrderResponse {

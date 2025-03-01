@@ -9,13 +9,16 @@ import (
 
 
 
-func main(){
+func main() {
 	var port = ":7777"
 
 	listener, err := net.Listen("tcp", port)
 	if err != nil {
-			log.Fatalf("Erro ao iniciar o servidor: %v", err)
+		log.Fatalf("Erro ao iniciar o servidor: %v", err)
 	}
+
+	// create the repository
+	// repository := NewOrderRepository()
 
 	grpcService := grpc.NewServer()
 
