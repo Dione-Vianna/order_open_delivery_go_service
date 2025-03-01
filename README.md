@@ -15,7 +15,7 @@ Certifique-se de ter o Go instalado e execute:
 Para iniciar o servidor, rode o comando:
 ```sh
 make run
-
+```
 
 ## Estrutura de Pastas
 
