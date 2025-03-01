@@ -16,23 +16,32 @@ import (
 )
 
 func main() {
-	
+
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("Erro ao carregar o arquivo .env")
 	}
 
-	awsRegion := os.Getenv("AWS_REGION")
-	queueURL := os.Getenv("SQS_QUEUE_URL")
+	provider := queue.RabbitMQProvider // RabbitMQProvider or SQSProvider
 
-	
-	sqsClient, err := queue.NewSQSClient(awsRegion, queueURL)
+	config := make(map[string]string)
 
-	orderRepository := repository.NewInMemoryOrderRepository()
-	
+	if provider == queue.SQSProvider {
+		config["region"] = os.Getenv("AWS_REGION")
+		config["queueURL"] = os.Getenv("SQS_QUEUE_URL")
+	}
+
+	if provider == queue.RabbitMQProvider {
+		config["uri"] = os.Getenv("RABBITMQ_URI")
+		config["queueName"] = os.Getenv("RABBITMQ_QUEUE_NAME")
+	}
+
+	sqsClient, err := queue.NewQueueClient(provider, config)
 	if err != nil {
 		log.Fatalf("Erro ao criar cliente SQS: %v", err)
 	}
+
+	orderRepository := repository.NewInMemoryOrderRepository()
 
 	orderService := service.NewOrderService(orderRepository, sqsClient)
 
@@ -44,7 +53,7 @@ func main() {
 	orderHandler := handler.NewOrderHandler(orderService)
 
 	grpcServer := grpc.NewServer()
-	proto.RegisterOrderServiceServer(grpcServer, orderHandler) 
+	proto.RegisterOrderServiceServer(grpcServer, orderHandler)
 
 	log.Printf("Servidor gRPC rodando na porta :7777")
 	if err := grpcServer.Serve(listener); err != nil {

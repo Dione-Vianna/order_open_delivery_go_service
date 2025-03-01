@@ -6,6 +6,7 @@ require (
 	github.com/aws/aws-sdk-go v1.55.6
 	github.com/go-playground/validator v9.31.0+incompatible
 	github.com/joho/godotenv v1.5.1
+	github.com/streadway/amqp v1.1.0
 	google.golang.org/grpc v1.70.0
 	google.golang.org/protobuf v1.35.2
 )
