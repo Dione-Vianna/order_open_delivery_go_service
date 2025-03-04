@@ -5,5 +5,3 @@ type QueueClient interface {
 }
 
 type QueueProvider string
-
-type QueueClientFactory func(config map[string]string) (QueueClient, error)

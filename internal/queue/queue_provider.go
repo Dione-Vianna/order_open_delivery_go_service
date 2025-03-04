@@ -5,6 +5,8 @@ import (
 	"sync"
 )
 
+type QueueClientFactory func(config map[string]string) (QueueClient, error)
+
 var (
 	providers   = make(map[QueueProvider]QueueClientFactory)
 	providersMu sync.RWMutex
