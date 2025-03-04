@@ -16,10 +16,10 @@ import (
 )
 
 func startServer(provider queue.QueueProvider, config map[string]string) error {
-
 	client, err := queue.NewQueueClient(provider, config)
 	if err != nil {
-		log.Fatalf("Erro ao criar cliente de fila: %v", err)
+		log.Fatalf("Error creating queue client: %v", err)
+		panic("Error creating queue client")
 	}
 
 	orderRepository := repository.NewInMemoryOrderRepository()
@@ -38,26 +38,37 @@ func startServer(provider queue.QueueProvider, config map[string]string) error {
 		return err
 	}
 
-	log.Printf("Servidor gRPC rodando na porta :7777")
+	log.Printf("gRPC server running on port :7777")
 	return nil
 }
 
 func main() {
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal("Erro ao carregar o arquivo .env")
+		log.Fatal("Error loading .env file")
+		panic("Error loadin .env file")
 	}
 
-	provider := queue.SQSProvider // RabbitMQProvider or SQSProvider
+	providerStr := os.Getenv("QUEUE_PROVIDER")
+	var provider queue.QueueProvider
+
+	switch providerStr {
+	case "SQS":
+		provider = "SQS"
+	case "RabbitMQ":
+		provider = "RabbitMQ"
+	default:
+		log.Fatalf("Provedor de fila desconhecido: %s", providerStr)
+	}
 
 	config := make(map[string]string)
 
-	if provider == queue.SQSProvider {
+	if provider == "SQS" {
 		config["region"] = os.Getenv("AWS_REGION")
 		config["queueURL"] = os.Getenv("SQS_QUEUE_URL")
 	}
 
-	if provider == queue.RabbitMQProvider {
+	if provider == "RabbitMQ" {
 		config["uri"] = os.Getenv("RABBITMQ_URI")
 		config["queueName"] = os.Getenv("RABBITMQ_QUEUE_NAME")
 	}

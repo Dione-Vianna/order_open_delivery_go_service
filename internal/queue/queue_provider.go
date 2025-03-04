@@ -2,26 +2,28 @@ package queue
 
 import (
 	"fmt"
+	"sync"
 )
 
-type QueueProvider string
-
-const (
-	SQSProvider       QueueProvider = "SQS"
-	RabbitMQProvider  QueueProvider = "RabbitMQ"
+var (
+	providers   = make(map[QueueProvider]QueueClientFactory)
+	providersMu sync.RWMutex
 )
+
+func RegisterProvider(name QueueProvider, factory QueueClientFactory) {
+	providersMu.Lock()
+	defer providersMu.Unlock()
+	providers[name] = factory
+}
 
 func NewQueueClient(provider QueueProvider, config map[string]string) (QueueClient, error) {
-	switch provider {
-	case SQSProvider:
-		region := config["region"]
-		queueURL := config["queueURL"]
-		return NewSQSClient(region, queueURL)
-	case RabbitMQProvider:
-		uri := config["uri"]
-		queueName := config["queueName"]
-		return NewRabbitMQClient(uri, queueName)
-	default:
-		return nil, fmt.Errorf("provvedor de fila desconhecido: %v", provider)
+	providersMu.RLock()
+	defer providersMu.RUnlock()
+
+	factory, exists := providers[provider]
+	if !exists {
+		return nil, fmt.Errorf("provedor de fila desconhecido: %v", provider)
 	}
+
+	return factory(config)
 }
