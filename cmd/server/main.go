@@ -43,34 +43,25 @@ func startServer(provider queue.QueueProvider, config map[string]string) error {
 }
 
 func main() {
-	err := godotenv.Load()
+	err := godotenv.Load("./")
 	if err != nil {
 		log.Fatal("Error loading .env file")
 		panic("Error loadin .env file")
 	}
 
-	providerStr := os.Getenv("QUEUE_PROVIDER")
-	var provider queue.QueueProvider
-
-	switch providerStr {
-	case "SQS":
-		provider = "SQS"
-	case "RabbitMQ":
-		provider = "RabbitMQ"
-	default:
-		log.Fatalf("Provedor de fila desconhecido: %s", providerStr)
-	}
+	provider := queue.QueueProvider(os.Getenv("QUEUE_PROVIDER"))
 
 	config := make(map[string]string)
 
-	if provider == "SQS" {
+	switch provider {
+	case "SQS":
 		config["region"] = os.Getenv("AWS_REGION")
 		config["queueURL"] = os.Getenv("SQS_QUEUE_URL")
-	}
-
-	if provider == "RabbitMQ" {
+	case "RabbitMQ":
 		config["uri"] = os.Getenv("RABBITMQ_URI")
 		config["queueName"] = os.Getenv("RABBITMQ_QUEUE_NAME")
+	default:
+		log.Fatalf("Provedor de fila desconhecido: %s", provider)
 	}
 
 	if err := startServer(provider, config); err != nil {
