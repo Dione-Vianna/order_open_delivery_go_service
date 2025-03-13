@@ -6,6 +6,11 @@ func init() {
 		queueURL := config["queueURL"]
 		return NewSQSClient(region, queueURL)
 	})
+	RegisterProvider("Kafka", func(config map[string]string) (QueueClient, error) {
+		region := config["region"]
+		queueURL := config["queueURL"]
+		return NewKafkaClint(region, queueURL)
+	})
 
 	RegisterProvider("RabbitMQ", func(config map[string]string) (QueueClient, error) {
 		uri := config["uri"]

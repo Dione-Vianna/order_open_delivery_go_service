@@ -35,6 +35,8 @@ func (service *OrderService) CreateOrder(ctx context.Context, req *proto.OrderRe
 		return nil, err
 	}
 
+	log.Printf("\n\n Pedido: %v \n\n", req.String())
+
 	orderJSON, err := json.Marshal(req)
 	if err != nil {
 		log.Printf("Erro ao converter pedido para JSON: %v", err)

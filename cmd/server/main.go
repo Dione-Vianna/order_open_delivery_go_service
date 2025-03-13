@@ -43,8 +43,8 @@ func startServer(provider queue.QueueProvider, config map[string]string) error {
 }
 
 func main() {
-	err := godotenv.Load()
-	if err != nil {
+
+	if err := godotenv.Load(); err != nil {
 		log.Fatal("Error loading .env file")
 		panic("Error loadin .env file")
 	}
@@ -60,6 +60,10 @@ func main() {
 	case "RabbitMQ":
 		config["uri"] = os.Getenv("RABBITMQ_URI")
 		config["queueName"] = os.Getenv("RABBITMQ_QUEUE_NAME")
+	case "Kafka":
+		config["region"] = os.Getenv("AWS_REGION")
+		config["queueURL"] = os.Getenv("KAFKA_QUEUE_URL")
+
 	default:
 		log.Fatalf("Provedor de fila desconhecido: %s", provider)
 	}
